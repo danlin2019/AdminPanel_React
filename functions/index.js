@@ -56,50 +56,19 @@ exports.addProduct = onRequest((req, res) => {
 
 /**
  * 讀取產品列表 API
- * 用於分頁讀取產品列表，支援游標分頁，並返回當前頁數、總頁數與產品資料。
+ * 支援分頁、搜尋、排序功能。
  * 
  * @method GET
  * @endpoint /getProductList
  * 
  * @param {number} req.query.pageSize - 每頁顯示的產品數量，預設為 10。
  * @param {number} req.query.page - 當前的頁數，預設為第 1 頁。
- * @param {string} [req.query.startAfter] - 上一頁最後一筆資料的 ID，用於游標分頁。
+ * @param {string} [req.query.startAfter] - 游標，從這個 Document 後開始查詢。
+ * @param {string} [req.query.search] - 搜尋關鍵字，用於篩選產品名稱。
+ * @param {string} [req.query.sortBy] - 排序欄位，預設為 "createdAt"。
+ * @param {string} [req.query.sortOrder] - 排序順序，"asc" 升序 或 "desc" 降序。
  * 
- * @returns {Object} 回傳 JSON 格式的資料：
- *    - {boolean} success - 請求是否成功。
- *    - {Array<Object>} products - 產品列表，每個產品包含 id 和其他欄位資料。
- *    - {Object} pagination - 分頁資訊：
- *        - {number} currentPage - 當前頁數。
- *        - {number} totalPages - 總頁數。
- *        - {number} pageSize - 每頁顯示的筆數。
- *        - {boolean} hasNext - 是否有下一頁。
- *        - {boolean} hasPrev - 是否有上一頁。
- *        - {string} lastDocId - 當前頁最後一筆資料的 ID，供下一頁使用。
- * 
- * @example
- * GET /getProductList?page=1&pageSize=10
- * 
- * 回傳範例：
- * {
- *   "success": true,
- *   "products": [
- *     { "id": "product1", "title": "產品 1", "price": 100 },
- *     { "id": "product2", "title": "產品 2", "price": 200 }
- *   ],
- *   "pagination": {
- *     "currentPage": 1,
- *     "totalPages": 5,
- *     "pageSize": 10,
- *     "hasNext": true,
- *     "hasPrev": false,
- *     "lastDocId": "product2"
- *   }
- * }
- */
-
-/**
- * limit：用於限制每次查詢返回的筆數。
- * startAfter：設定從指定 document 後開始查詢，用來跳到下一頁。
+ * @returns {Object} 回傳 JSON 格式的資料，包含產品列表與分頁資訊。
  */
 
 exports.getProductList = onRequest((req, res) => {
@@ -109,48 +78,62 @@ exports.getProductList = onRequest((req, res) => {
         return res.status(405).send({ success: false, message: "方法不被允許" });
       }
 
-      const pageSize = parseInt(req.query.pageSize) || 10; // 每頁筆數，預設 10 筆
-      const page = parseInt(req.query.page) || 1; // 當前頁數，預設第 1 頁
-      const startAfterDoc = req.query.startAfter || null; // 游標，從這個 Document 後開始
+      // 參數設定
+      const pageSize = parseInt(req.query.pageSize) || 10; // 每頁筆數
+      const page = parseInt(req.query.page) || 1; // 當前頁數
+      const startAfterDoc = req.query.startAfter || null; // 游標分頁的起點
+      const search = req.query.search || ""; // 搜尋條件
+      const sortBy = req.query.sortBy || "createdAt"; // 排序欄位
+      const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc"; // 排序順序
 
-      // Step 1: 計算總筆數
-      const totalSnapshot = await db.collection("productList").count().get();
-      const totalProducts = totalSnapshot.data().count;
+      // 初始化查詢
+      let query = db.collection("productList").orderBy(sortBy, sortOrder);
+
+      // 搜尋條件
+      if (search) {
+        if (sortBy !== "title") {
+          throw new Error("搜尋功能目前僅支援 'title' 排序，請調整排序條件");
+        }
+        query = query
+          .where("title", ">=", search)
+          .where("title", "<=", search + "\uf8ff");
+      }
+
+      // 計算搜尋條件的總數
+      const countQuery = query; // 使用相同的查詢條件計算總數
+      const countSnapshot = await countQuery.get();
+      const totalProducts = countSnapshot.size; // 搜尋結果的總筆數
       const totalPages = Math.ceil(totalProducts / pageSize);
 
-      // Step 2: 構建查詢
-      let query = db.collection("productList").orderBy("createdAt").limit(pageSize);
-
+      // 游標分頁
       if (startAfterDoc) {
         const lastDocSnapshot = await db.collection("productList").doc(startAfterDoc).get();
         if (lastDocSnapshot.exists) {
           query = query.startAfter(lastDocSnapshot);
-        } else {
-          console.warn("游標未找到，返回第一頁");
         }
       }
 
-      // Step 3: 查詢分頁資料
-      const snapshot = await query.get();
+      // 執行查詢
+      const snapshot = await query.limit(pageSize).get();
       const products = [];
       let lastDocId = null;
 
       snapshot.forEach((doc) => {
         products.push({ id: doc.id, ...doc.data() });
-        lastDocId = doc.id; // 記錄最後一筆的 Document ID
+        lastDocId = doc.id; // 記錄最後一筆資料的 ID
       });
 
-      // Step 4: 回應資料
+      // 回傳資料
       res.status(200).json({
         success: true,
         products,
         pagination: {
           currentPage: page,
-          pageSize: pageSize,
-          totalPages: totalPages,
+          pageSize,
+          totalPages,
           hasNext: page < totalPages,
           hasPrev: page > 1,
-          lastDocId: lastDocId, // 游標分頁的游標
+          lastDocId,
         },
       });
     } catch (error) {
@@ -159,6 +142,8 @@ exports.getProductList = onRequest((req, res) => {
     }
   });
 });
+
+
 
 /**
  * 編輯產品 API

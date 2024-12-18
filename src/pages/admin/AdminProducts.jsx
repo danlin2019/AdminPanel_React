@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from 'sweetalert2'
 
 import Pagination from "../../components/admin/Pagination";
+import Search from "../../components/admin/Search";
 
 function AdminProducts(){
   const navigate = useNavigate()
@@ -25,7 +26,8 @@ function AdminProducts(){
 
 
   //取的 產品列表 api
-  const getProducts = async (page)=>{
+  // 預設設定 page search = ''（空）,sortBy = 'createdAt'(新增時間),sortOrder = "asc"(升幕)
+  const getProducts = async (page = 1,search = '',sortBy = 'title',sortOrder = "asc")=>{
     const startAfter = page === 1 ? "" : pagination.lastDocId;
     const res = await axios.get(
       `https://us-central1-car-project-b8e4e.cloudfunctions.net/getProductList`,
@@ -34,6 +36,9 @@ function AdminProducts(){
           page: page,
           pageSize: pagination.pageSize,
           startAfter: startAfter,
+          search: search, // 搜尋條件
+          sortBy: sortBy, // 排序欄位
+          sortOrder: sortOrder, // 排序順序
         },
       }
     );
@@ -46,7 +51,7 @@ function AdminProducts(){
       currentPage: page,
       lastDocId: res.data.pagination.lastDocId || null, // 更新新的 lastDocId
     });
-    console.log('產品',res)
+    console.log('產品',res,pagination)
   }  
 
   //openAddProduct 新增 & 修改資料
@@ -102,6 +107,7 @@ function AdminProducts(){
 
   return(
   <div className="p-3">
+    <Search getProducts = {getProducts}/>
     <h3>產品列表</h3>
     <hr />
     {/* 建立新增商品按鈕 */}

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
-
+import Swal from 'sweetalert2'
 
 function AdminAdProduct() {
   const location = useLocation();
