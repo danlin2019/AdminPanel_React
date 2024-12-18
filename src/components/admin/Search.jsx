@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function Search({ getProducts ,handleSearch }) {
   const [searchValue, setSearchValue] = useState("");
-  const [ascending , setAscending] = useState(true)
+  const [ascending , setAscending] = useState(false)
 
   useEffect(()=>{
     handleSearch(searchValue,ascending)
@@ -43,10 +43,10 @@ function Search({ getProducts ,handleSearch }) {
       價格:
         <input
           type='checkbox'
-          checked={ascending}
+          // checked={ascending}
           onChange={(e) => setAscending(e.target.checked)}
         />
-        { ascending ? '由高到低' : '由低到高'}
+        { ascending ? '最新' : '最舊'}
     </div>
   )
 }

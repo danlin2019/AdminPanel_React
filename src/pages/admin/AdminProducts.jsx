@@ -37,6 +37,7 @@ function AdminProducts(){
         },
       }
     );
+    console.log('res.data.products',res.data.products)
     setProducts(res.data.products)
     setFilteredProducts(res.data.products)
     // 需立即更新
@@ -44,7 +45,7 @@ function AdminProducts(){
       ...res.data.pagination,
       currentPage: page,
     });
-    console.log('產品',res,pagination)
+
   }  
 
   //openAddProduct 新增 & 修改資料
@@ -106,22 +107,41 @@ function AdminProducts(){
    * toLowerCase來轉換成小寫，避免大小寫影響搜尋結果
    */
   const handleSearch = (searchValue,ascending) =>{
-      const filterProduct = () =>{
-        return [...products]
-          .filter( product => product.title.toLowerCase().includes(searchValue.toLowerCase()))
-          .sort((a,b)=> ascending ? a.price - b.price : b.price - a.price)
-      } 
-      setFilteredProducts(filterProduct)
+    // 如果搜尋條件為空，重置篩選和分頁
+    if (!searchValue) {
+      const sortedProducts = [...products].sort((a, b) =>
+        ascending
+          ? a?.createdAt?._seconds - b?.createdAt._seconds
+          : b?.createdAt._seconds - a?.createdAt._seconds
+      );
+  
+      setFilteredProducts(sortedProducts); // 恢復完整排序的數據
       setPagination((prev) => ({
+        ...prev,
+        totalPages: Math.ceil(sortedProducts.length / prev.pageSize),
+        totalProducts: sortedProducts.length,
+        currentPage: 1,
+      }));
+      return;
+    }
+      const filterProduct = [...products]
+          .filter( product => product.title.toLowerCase().includes(searchValue.toLowerCase()))
+          .sort((a,b)=> ascending ? a?.createdAt?._seconds - b?.createdAt._seconds : b?.createdAt._seconds - a?.createdAt._seconds)
+      
+      
+      setFilteredProducts(filterProduct)
+      setPagination((prev) => (
+        console.log(prev),
+        {
         ...prev,
         totalPages: Math.ceil(filterProduct.length/prev.pageSize), // 取得頁數  篩選出來的數量 / 資料筆數並轉成整數
         totalProducts: filterProduct.length,  // 取得筆數
         currentPage: 1, // 搜尋後從第 1 頁開始
       }))
 
-      if( searchValue === '')  getProducts()
+      // if( searchValue === '')  getProducts()
   }
-
+  
   return(
   <div className="p-3">
 
@@ -132,26 +152,24 @@ function AdminProducts(){
     <button
       type="button"
       onClick={()=>{openAddProduct('create',{})}}
-     >真正的新增內容按鈕</button>
+     >新增內容</button>
 
     <table className="table">
       <thead>
 
         <tr>
-          <th scope="col">分類</th>
           <th scope="col">名稱</th>
           <th scope="col">售價</th>
           <th scope="col">啟用狀態</th>
-          <th scope="col">編輯</th>
+          <th scope="col">時間</th>
         </tr>
       </thead>
       <tbody>
       {filteredProducts.map((product)=>{
         return (<tr key={product.id}>
-          <td>{product.category}</td>
           <td>{product.title}</td>
           <td>{product.price}</td>
-          <td>{product.is_enabled ? '啟用' : '未啟用'}</td>
+          <td>{`${new Date(product.time).getFullYear().toString()}.${(new Date(product.time).getMonth()+1).toString()}.${new Date(product.time).getDate().toString()}`}</td>
           <td>
             <button
               type="button"

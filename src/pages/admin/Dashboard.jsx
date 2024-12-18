@@ -48,17 +48,6 @@ function Dashboard() {
           <p className="text-white mb-0">
             後台管理系統
           </p>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
@@ -70,8 +59,8 @@ function Dashboard() {
           </div>
         </div>
       </nav>
-      <div className="d-flex" style={{ minHeight: 'calc(100vh - 56px)' }}>
-        <div className="bg-light" style={{ width: '200px' }}>
+      <div className="d-flex">
+        <div className="bg-light" >
           <ul className="list-group list-group-flush">
             <Link className="list-group-item list-group-item-action py-3" to="/admin/products">
               <i className="bi bi-cup-fill me-2" />
