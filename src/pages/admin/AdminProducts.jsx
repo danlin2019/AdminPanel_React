@@ -94,35 +94,37 @@ function AdminProducts(){
     console.log(res)
   }
 
-  // 收尋
-  const handleSearch = (searchValue) =>{
-    console.log('searchValue',searchValue)
-    console.log('products',products)
-    // 用取得的資料來跟 searchValue 做篩選
-    // 篩選出來結果後 需要重新再設定一次頁數
-    const filterData = products.filter((product)=>{
-      return product.title.toLowerCase().includes(searchValue.toLowerCase())
-    })
-    
-    setFilteredProducts(filterData)
-    
-    setPagination((prev) => (
-      console.log('filterData',filterData,filterData.length , prev.pageSize),
-      {
-      ...prev,
-      totalPages: Math.ceil(filterData.length/prev.pageSize),
-      totalProducts: filterData.length,
-      currentPage: 1, // 搜尋後從第 1 頁開始
-      hasNext: false, // 搜尋結果只有一頁時，沒有下一頁
-      hasPrev: false, // 搜尋結果只有一頁時，沒有上一頁
-    }))
+  // 收尋 & 排序
+  /**
+   * 
+   * @param {any} searchValue 
+   * @param {boolean} ascending 
+   * 用取得的資料來跟 searchValue 做篩選
+   * 篩選出來結果後 需要重新再設定一次頁數
+   * 用title做篩選 
+   * includes 檢視裡是否有包含 searchValue 的字串 
+   * toLowerCase來轉換成小寫，避免大小寫影響搜尋結果
+   */
+  const handleSearch = (searchValue,ascending) =>{
+      const filterProduct = () =>{
+        return [...products]
+          .filter( product => product.title.toLowerCase().includes(searchValue.toLowerCase()))
+          .sort((a,b)=> ascending ? a.price - b.price : b.price - a.price)
+      } 
+      setFilteredProducts(filterProduct)
+      setPagination((prev) => ({
+        ...prev,
+        totalPages: Math.ceil(filterProduct.length/prev.pageSize), // 取得頁數  篩選出來的數量 / 資料筆數並轉成整數
+        totalProducts: filterProduct.length,  // 取得筆數
+        currentPage: 1, // 搜尋後從第 1 頁開始
+      }))
 
+      if( searchValue === '')  getProducts()
   }
-
-  
 
   return(
   <div className="p-3">
+
     <Search getProducts = {getProducts} handleSearch = {handleSearch}/>
     <h3>產品列表</h3>
     <hr />
