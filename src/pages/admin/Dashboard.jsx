@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useReducer } from "react";
 import Message from "../../components/admin/Message";
 import {MessageContext,messageReducer,initState} from '../../store/messageStore'
+import Swal from "sweetalert2";
 function Dashboard() {
   const navigate = useNavigate()
 
@@ -13,31 +14,31 @@ function Dashboard() {
   // 登出 清除 token
   const logOut = () =>{
     console.log('登出')
-    document.cookie = 'hexToken=;'
-    navigate('/login')
+    document.cookie = 'authToken=;'
+    navigate('/')
   }
   // 判斷是否有登入 若無登入強行由此路由進入需導回首頁
   // 取出 token 
   const token = document.cookie
   .split("; ")
-  .find((row) => row.startsWith("hexToken="))
+  .find((row) => row.startsWith("authToken="))
   ?.split("=")[1];
-  // axios 預設值的headers 必須夾帶驗證的資訊 參考文章 https://github.com/axios/axios#global-axios-defaults
-  axios.defaults.headers.common['Authorization'] = token
+
+
   useEffect(()=>{
       if(!token){
-        navigate('/login')
+        Swal.fire({
+          title: "已登出 請重新登入",
+          icon: "error",
+        }).then(()=>{
+          navigate('/')
+        })
+       
+      }else{
+        // 解碼 取得身份
+        const userData = JSON.parse(atob(token))
+        console.log(userData)
       }
-      // 防呆 若token錯誤
-      (async ()=>{
-        try {
-          const res = await axios.post('/v2/api/user/check')
-        } catch (error) {
-          if(!error.response.data.success){
-            navigate('/login')
-          }
-        }
-      })()
   },[token,navigate])
 
   return (
@@ -48,7 +49,7 @@ function Dashboard() {
           <p className="text-white mb-0">
             後台管理系統
           </p>
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <div className="" >
             <ul className="navbar-nav">
               <li className="nav-item">
                 <button type="button" className="btn btn-sm btn-light" onClick={logOut}>
@@ -65,10 +66,6 @@ function Dashboard() {
             <Link className="list-group-item list-group-item-action py-3" to="/admin/products">
               <i className="bi bi-cup-fill me-2" />
               產品列表
-            </Link>
-            <Link className="list-group-item list-group-item-action py-3" to="/admin/coupons">
-              <i className="bi bi-ticket-perforated-fill me-2" />
-              優惠卷列表
             </Link>
             <Link className="list-group-item list-group-item-action py-3" to="/admin/orders">
               <i className="bi bi-receipt me-2" />

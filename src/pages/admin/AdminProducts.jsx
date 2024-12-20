@@ -55,10 +55,10 @@ function AdminProducts(){
   }
 
   //openDeteleProduct 刪除
-  const openDeteleProduct = (id) =>{
-    console.log('delete' ,id)
+  const openDeteleProduct = (id,title) =>{
+    console.log('delete' ,id,title)
     Swal.fire({
-      title: "確定要刪除嗎？",
+      title: `確定要刪除${title}嗎？`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -95,9 +95,8 @@ function AdminProducts(){
     console.log(res)
   }
 
-  // 收尋 & 排序
   /**
-   * 
+   * 收尋
    * @param {any} searchValue 
    * @param {boolean} ascending 
    * 用取得的資料來跟 searchValue 做篩選
@@ -106,46 +105,42 @@ function AdminProducts(){
    * includes 檢視裡是否有包含 searchValue 的字串 
    * toLowerCase來轉換成小寫，避免大小寫影響搜尋結果
    */
-  const handleSearch = (searchValue,ascending) =>{
-    // 如果搜尋條件為空，重置篩選和分頁
-    if (!searchValue) {
-      const sortedProducts = [...products].sort((a, b) =>
-        ascending
-          ? a?.createdAt?._seconds - b?.createdAt._seconds
-          : b?.createdAt._seconds - a?.createdAt._seconds
-      );
-  
-      setFilteredProducts(sortedProducts); // 恢復完整排序的數據
-      setPagination((prev) => ({
-        ...prev,
-        totalPages: Math.ceil(sortedProducts.length / prev.pageSize),
-        totalProducts: sortedProducts.length,
-        currentPage: 1,
-      }));
-      return;
-    }
+  const handleSearch = (searchValue) =>{
+      // 進行篩選和排序
       const filterProduct = [...products]
           .filter( product => product.title.toLowerCase().includes(searchValue.toLowerCase()))
-          .sort((a,b)=> ascending ? a?.createdAt?._seconds - b?.createdAt._seconds : b?.createdAt._seconds - a?.createdAt._seconds)
-      
-      
+      // 篩選後資料
       setFilteredProducts(filterProduct)
-      setPagination((prev) => (
-        console.log(prev),
-        {
+      setPagination((prev) => ({
         ...prev,
         totalPages: Math.ceil(filterProduct.length/prev.pageSize), // 取得頁數  篩選出來的數量 / 資料筆數並轉成整數
         totalProducts: filterProduct.length,  // 取得筆數
         currentPage: 1, // 搜尋後從第 1 頁開始
       }))
-
-      // if( searchValue === '')  getProducts()
   }
-  
+  /**
+   * 排序
+   * @param {boolean} ascending 
+   * @param {string} sort 
+   */
+  const handSortItem = (ascending, sort) =>{
+    const sortProduct = [...filteredProducts].sort((a,b)=>{
+        if(sort === 'createdAt') {
+          return ascending ? 
+          a?.createdAt?._seconds - b?.createdAt?._seconds : 
+          b?.createdAt?._seconds - a?.createdAt?._seconds
+        }
+        if(sort === 'price'){
+          return ascending ? a.price - b.price :  b.price - a.price
+        }
+    })
+    setFilteredProducts(sortProduct)
+  } 
+
   return(
   <div className="p-3">
 
-    <Search getProducts = {getProducts} handleSearch = {handleSearch}/>
+    <Search getProducts = {getProducts} handleSearch = {handleSearch}  handSortItem = {handSortItem}/>
     <h3>產品列表</h3>
     <hr />
     {/* 建立新增商品按鈕 */}
@@ -156,7 +151,6 @@ function AdminProducts(){
 
     <table className="table">
       <thead>
-
         <tr>
           <th scope="col">名稱</th>
           <th scope="col">售價</th>
@@ -181,7 +175,7 @@ function AdminProducts(){
             <button
               type="button"
               className="btn btn-outline-danger btn-sm ms-2"
-              onClick={()=>{openDeteleProduct(product.id)}}
+              onClick={()=>{openDeteleProduct(product.id,product.title)}}
             >
               刪除
             </button>

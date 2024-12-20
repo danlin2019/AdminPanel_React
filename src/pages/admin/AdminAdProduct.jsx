@@ -4,6 +4,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase";
 import axios from "axios";
 import Swal from 'sweetalert2'
 // import { newDate } from "react-datepicker/dist/date_utils";
@@ -12,6 +14,9 @@ function AdminAdProduct() {
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [uploading, setUploading] = useState(false);
+
+
 
   const { type, productList } = location.state || { type: "create", productList: {} }
 
@@ -25,8 +30,8 @@ function AdminAdProduct() {
     unit: "個",
     content: "",
     is_enabled: 0,
-    time: ''
-    // imageUrl: "",
+    time: '',
+    imageUrl: "",
   });
 
 
@@ -47,8 +52,8 @@ function AdminAdProduct() {
         unit: "1個",
         content: "",
         is_enabled: 0,
-        time: new Date().getTime()
-        // imageUrl: "",
+        time: new Date().getTime(),
+        imageUrl: "",
       });
     } else if (type === "edit") {
       setProductData(productList);
@@ -87,7 +92,6 @@ function AdminAdProduct() {
   const handleSubmit = async () => {
     const payload = {...productData}
     productData.content = editorContent
-    // productData.time = selectedDate.getTime()
 
     console.log("提交的商品資料：", productData)
     let api = 'https://us-central1-car-project-b8e4e.cloudfunctions.net/addProduct',
@@ -119,9 +123,51 @@ function AdminAdProduct() {
     }
   };
 
+  // 圖片上傳處理
+ const handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setUploading(true);
+  const storageRef = ref(storage, `images/${file.name}`);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      // 可選：上傳進度
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log("Upload is " + progress + "% done");
+    },
+    (error) => {
+      console.error("上傳失敗：", error);
+      setUploading(false);
+    },
+    async () => {
+      // 上傳完成
+      const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+      console.log("圖片下載網址：", downloadURL);
+      setProductData((prev) => ({ ...prev, imageUrl: downloadURL }));
+      setUploading(false);
+    }
+  );
+};
+
   return (
     <div className="p-3">
       <ul>
+        <li>
+          <label htmlFor="image">
+            <input
+              type="file" 
+              accept="image/gif, image/jpeg, image/png"
+              id="image"
+              name="image"
+              placeholder="上傳圖片"
+              onChange={handleImageUpload}
+            />
+          </label>
+        </li>
         <li>
         <DatePicker
           selected={selectedDate}

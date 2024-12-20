@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "username": "test123",
+      "password": "123",
+      "permissions": ["create", "read", "update", "delete"]
+    },
+    {
+      "username": "test456",
+      "password": "456",
+      "permissions": ["create", "read"]
+    }
+  ]
+}

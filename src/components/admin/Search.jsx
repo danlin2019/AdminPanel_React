@@ -1,17 +1,32 @@
 import { useEffect, useState } from "react";
 
-function Search({ getProducts ,handleSearch }) {
+function Search({ getProducts , handleSearch ,handSortItem }) {
   const [searchValue, setSearchValue] = useState("");
-  const [ascending , setAscending] = useState(false)
+  const [ascending , setAscending] = useState(false);
+  const [isSelected,setIsSelected] = useState('')
+
+  const sortOptions = [
+    {value:'createdAt',lable:'上架時間'},
+    {value:'price',lable:'價格'},
+  ]
 
   useEffect(()=>{
-    handleSearch(searchValue,ascending)
-  },[searchValue,ascending])
+    handSortItem(ascending,isSelected)
+    if(isSelected === ''){
+      setIsSelected('createdAt')
+    }
+  },[ascending,isSelected])
+
+  useEffect(()=>{
+    if(searchValue === ''){
+      getProducts()
+    }
+  },[searchValue])
 
   // 處理搜尋按鈕點擊事件
   const onSearch = () => {
     if(handleSearch){
-      handleSearch(searchValue,ascending)
+      handleSearch(searchValue)
     }
   };
   
@@ -27,7 +42,7 @@ function Search({ getProducts ,handleSearch }) {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
-          {/* <button
+          <button
             className="absolute top-1 right-1 flex items-center rounded bg-slate-800 py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             type="button"
             onClick = {onSearch}
@@ -37,16 +52,34 @@ function Search({ getProducts ,handleSearch }) {
               <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd" />
             </svg>
             搜尋
-          </button>  */}
+          </button> 
         </div>
       </div>
-      價格:
+     
+
+      
+          <select 
+            value={isSelected}
+            onChange={(e)=>setIsSelected(e.target.value) }
+          >
+            {sortOptions.map((option,i)=>{
+              return (
+                <option key={i} value={option.value}>
+                  {option.lable}
+                </option>
+              )
+             })}
+          </select>
+    
+      排序:
+      <label>
         <input
-          type='checkbox'
-          // checked={ascending}
-          onChange={(e) => setAscending(e.target.checked)}
-        />
-        { ascending ? '最新' : '最舊'}
+            type='checkbox'
+            onChange={(e) => setAscending(e.target.checked)}
+          />
+          {isSelected === 'createdAt' || '' ? ascending ? '最舊' : '最新' : ascending ? '最低' : '最高'}
+      </label>
+
     </div>
   )
 }
