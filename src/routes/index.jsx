@@ -1,10 +1,8 @@
 import App from '../App'
 import Login from '../pages/Login'; // 登入
-import Dashboard from '../pages/admin/Dashboard'; // 左邊選項
-import AdminProducts from '../pages/admin/AdminProducts'; // 產品列表
-import AdminAdProduct from '../pages/admin/AdminAdProduct' //新增商品
-
-import AdminOrders from '../pages/admin/AdminOrders';  // 訂單列表
+import Dashboard from '../pages/Dashboard'; // 左邊選項
+import AdminProducts from '../pages/AdminProducts'; // 產品列表
+import AdminAdProduct from '../pages/AdminAdProduct' //新增商品
 
 import { createHashRouter } from 'react-router-dom';
 //  Plain Object Router 路由表 
@@ -24,10 +22,6 @@ const routes = [
           {
             path:'products',
             element:<AdminProducts/>
-          },
-          {
-            path:'orders',
-            element:<AdminOrders/>
           },
           {
             path:'addproduct',

@@ -1,22 +1,22 @@
-import { useEffect, useState,useRef } from "react";
-import { useLocation,useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebase";
+import { storage } from "../firebase";
+import { useEffect, useState,useRef } from "react";
+import { useLocation,useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
-import Swal from 'sweetalert2'
-// import { newDate } from "react-datepicker/dist/date_utils";
+import { setMessage } from "../slice/messageSlice";
 
 function AdminAdProduct() {
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [uploading, setUploading] = useState(false);
-
-
+  const dispatch = useDispatch()
+  const [msg,setMsg] = useState('')
 
   const { type, productList } = location.state || { type: "create", productList: {} }
 
@@ -40,7 +40,6 @@ function AdminAdProduct() {
    * 判斷當前類型並設置初始資料
    * @param {string} create 
    * @param {string} edit 
-   * @param {string} edit 
    */
   useEffect(() => {
     if (type === "create") {
@@ -55,9 +54,11 @@ function AdminAdProduct() {
         time: new Date().getTime(),
         imageUrl: "",
       });
+      setMsg('create')
     } else if (type === "edit") {
       setProductData(productList);
       setSelectedDate(productList.time || new Date().getTime())
+      setMsg('edit')
     }
   }, [type, productList]);
 
@@ -94,31 +95,36 @@ function AdminAdProduct() {
     productData.content = editorContent
 
     console.log("提交的商品資料：", productData)
-    let api = 'https://us-central1-car-project-b8e4e.cloudfunctions.net/addProduct',
+    let api = `${import.meta.env.VITE_APP_API_URL}addProduct`,
         method = 'post'
         
     if(type === 'edit'){
-      api = 'https://us-central1-car-project-b8e4e.cloudfunctions.net/editProduct',
+     
+      api = `${import.meta.env.VITE_APP_API_URL}/editProduct`,
       method = 'patch'
       // 刪除時間
       delete payload.createdAt
     }else{
+     
       // 新增模式，加上 createdAt
       payload.createdAt = new Date().toISOString()
     }
+    console.log('msg',msg)
     try {
       const res = await axios[method](api,payload)
       const {success} =  res.data
       if(success){
-        Swal.fire({
-          title: "提交成功：",
-          icon: "success",
-        }).then(()=>{
-          navigate('/admin/products')
-        })
+        dispatch(setMessage({
+          type: "success",
+          actionType: msg,
+        }))
       }
 
     } catch (error) {
+      dispatch(setMessage({
+        type: "error",
+        actionType: msg,
+      }))
       console.error("提交失敗：", error.message);
     }
   };

@@ -1,59 +1,63 @@
-import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { Warning } from "postcss";
+
+const predefindMessage = {
+  success:{
+    create:{title:'提交成功',icon:'success'},
+    edit:{title:'編輯成功',icon:'success'},
+  },
+  error:{
+    create:{title:'',icon:'error'},
+    edit:{title:'編輯失敗',icon:'error'},
+    delete:{title:'刪除失敗',icon:'error'}
+  },
+  warning:{
+    delete:{title:'刪除成功',icon:'warning'}
+  }
+}
 
 export const messageSlice = createSlice({
-  name: 'message',
-  initialState:[],
+  name:'message',
+
+  initialState:{
+    title:'',
+    icon:'',
+    type: '',
+    deleContent:[],
+    isVisible: false,
+  },
 
   reducers:{
-    creatMessage(state,action){
-      console.log('action',action.payload)
-      // const id = new Date().getTime() //用時間搓記來當id
-      if(action.payload.success){
-        state.push({
-          id:action.payload.id,
-          type: 'success',
-          title:'建立成功',
-          text: action.payload.message
-        });
-      }else{
-        state.push({
-          id:action.payload.id,
-          type: 'danger',
-          title:'建立失敗',
-          text: Array.isArray(action.payload.message) ? action.payload.message.join(',') : action.payload.message
-        });
+
+    setMessage(state,action){
+      const {type,actionType} = action.payload
+      // type: success/error, actionType: submit/delete/edit
+      const message = predefindMessage[type]?.[actionType]
+      console.log('message',message)
+      if(message){
+        state.title = message.title,
+        state.icon = message.icon,
+        state.type = actionType
+        state.isVisible = true
       }
     },
-    removeMessage(state,action){
-      const index = state.findIndex(item => item === action.payload)
-      state.splice(index,1)
-    }
+    deleteMesage(state,action){
+      const {type,actionType,deleteDate} = action.payload
+      state.icon = type
+      state.type = actionType
+      state.deleContent = deleteDate
+      state.isVisible = true
+    },
+    clearMessage(state){
+      state.title =''
+      state.icon = ''
+      state.type = ''
+      state.isVisible = false
+    },
+
   }
+
 })
 
-// React 建立非同步方法
-// createAsyncThunk 會帶入兩個參數 第一個是自定義名稱 第二個是 asycn function
-export const createAsyncMessage = createAsyncThunk(
-  'message/createAsyncMessage',
-  // 一樣會帶入兩個參數
-  async function (payload,{ dispatch, requestId}){
-    console.log('createAsyncMessagepayload',payload)
-    dispatch(
-      messageSlice.actions.creatMessage({
-        ...payload,
-        id:requestId
-      })
-    )
-
-    setTimeout(()=>{
-      dispatch(messageSlice.actions.removeMessage(requestId))
-     
-    },3000)
-
-
-  }
-)
-
-
-export const {creatMessage} = messageSlice.actions
+export const {setMessage,clearMessage,deleteMesage} = messageSlice.actions
 export default messageSlice.reducer

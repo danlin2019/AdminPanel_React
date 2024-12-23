@@ -1,15 +1,10 @@
 import { Outlet , useNavigate , Link} from "react-router-dom";
-import axios from "axios";
-import { useEffect, useReducer } from "react";
-import Message from "../../components/admin/Message";
-import {MessageContext,messageReducer,initState} from '../../store/messageStore'
+import { useEffect} from "react";
 import Swal from "sweetalert2";
 function Dashboard() {
   const navigate = useNavigate()
 
-  // 第一個是 reducer的狀態管理，第二是你的預設狀態
-  const reducer = useReducer(messageReducer,initState)
-  // console.log(reducer)
+
 
   // 登出 清除 token
   const logOut = () =>{
@@ -42,9 +37,8 @@ function Dashboard() {
   },[token,navigate])
 
   return (
-    <MessageContext.Provider value={reducer}>
-      <Message/>
-      <nav className="navbar navbar-expand-lg bg-dark">
+    <>
+     <nav className="navbar navbar-expand-lg bg-dark">
         <div className="container-fluid">
           <p className="text-white mb-0">
             後台管理系統
@@ -67,6 +61,10 @@ function Dashboard() {
               <i className="bi bi-cup-fill me-2" />
               產品列表
             </Link>
+            <Link className="list-group-item list-group-item-action py-3" to="/admin/coupons">
+              <i className="bi bi-ticket-perforated-fill me-2" />
+              優惠卷列表
+            </Link>
             <Link className="list-group-item list-group-item-action py-3" to="/admin/orders">
               <i className="bi bi-receipt me-2" />
               訂單列表
@@ -78,8 +76,7 @@ function Dashboard() {
           {token && <Outlet/>}
           {/* Products end */}
         </div>
-      </div>
-    </MessageContext.Provider>
+      </div></>
   )
 }
 

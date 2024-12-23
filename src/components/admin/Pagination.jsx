@@ -20,8 +20,8 @@ function Pagination({ pagination, chanegePage }) {
         </li>
 
         {/* 頁碼 */}
+     
         {[...new Array(pagination.totalPages)].map((_, i) => (
-        
           <li className="page-item" key={`${i}_page`}>
             <a
               className={`page-link ${

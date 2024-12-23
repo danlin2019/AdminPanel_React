@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from 'sweetalert2'
-
-import Pagination from "../../components/admin/Pagination";
-import Search from "../../components/admin/Search";
+import { useDispatch } from "react-redux";
+import Pagination from "../components/admin/Pagination";
+import Search from "../components/admin/Search";
+import { deleteMesage } from "../slice/messageSlice";
 
 function AdminProducts(){
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [products,setProducts] = useState([]) //取得資料
   const [filteredProducts,setFilteredProducts] = useState([]) // 篩選用
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     pageSize: 10,
@@ -19,17 +21,14 @@ function AdminProducts(){
     totalProducts: 0,
   });
 
-
-
   useEffect(()=>{
     getProducts()
   },[])
 
-
   //取的 產品列表 api
   const getProducts = async (page = 1)=>{
     const res = await axios.get(
-      `https://us-central1-car-project-b8e4e.cloudfunctions.net/allProducts`,
+      `${import.meta.env.VITE_APP_API_URL}allProducts`,
       {
         params: {
           page: page,
@@ -56,45 +55,12 @@ function AdminProducts(){
 
   //openDeteleProduct 刪除
   const openDeteleProduct = (id,title) =>{
-    console.log('delete' ,id,title)
-    Swal.fire({
-      title: `確定要刪除${title}嗎？`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "確認刪除",
-      cancelButtonText:"取消"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteProduct(id)
-          .then(()=>{
-            Swal.fire({
-              title: "資料已刪除!",
-              icon: "success",
-              confirmButtonText: "確認",
-            }).then(()=>{
-              window.location.reload()
-            })
-          })
-          .catch((error)=>{
-            Swal.fire({
-              title: error,
-              icon: "error",
-              text: "發生錯誤，請稍後再試。",
-            });
-          })
-
-
-      }
-    });
+    dispatch(deleteMesage({
+      type:"warning",
+      actionType: "delete",
+      deleteDate: [id,title]
+    }))
   }
-
-  const deleteProduct = async (id) =>{
-    const res = await axios.delete(`https://us-central1-car-project-b8e4e.cloudfunctions.net/deleteProduct?id=${id}`)
-    console.log(res)
-  }
-
   /**
    * 收尋
    * @param {any} searchValue 

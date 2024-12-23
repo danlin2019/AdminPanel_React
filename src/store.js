@@ -1,3 +1,4 @@
+// store 是狀態管理
 import { configureStore } from "@reduxjs/toolkit";
 import messageReducer from './slice/messageSlice'
 
