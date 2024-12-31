@@ -6,7 +6,7 @@ import Pagination from "../components/admin/Pagination";
 import Search from "../components/admin/Search";
 import { deleteMesage } from "../slice/messageSlice";
 
-function AdminProducts(){
+function AdminOrderProducts(){
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [products,setProducts] = useState([]) //取得資料
@@ -118,7 +118,7 @@ function AdminProducts(){
   <div className="w-[90%] m-auto ">
     <Search getProducts = {getProducts} handleSearch = {handleSearch}  handSortItem = {handSortItem}/>
     <div className="relative"> 
-      <h3 className="title-h1 border-b pb-2 mb-6">產品列表</h3>
+      <h3 className="title-h1 border-b pb-2 mb-6">訂單列表</h3>
       {/* 建立新增商品按鈕 */}
       <button type="button" className="addBtn absolute top-0 right-0" onClick={()=>{openAddProduct('create',{})}}>新增內容</button>
     </div>
@@ -169,4 +169,4 @@ function AdminProducts(){
   </div>)
 }
 
-export default AdminProducts;
+export default AdminOrderProducts;

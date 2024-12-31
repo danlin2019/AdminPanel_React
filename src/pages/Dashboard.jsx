@@ -1,83 +1,74 @@
-import { Outlet , useNavigate , Link} from "react-router-dom";
-import { useEffect} from "react";
+import { SiProducthunt } from "react-icons/si";
+import { VscListOrdered } from "react-icons/vsc";
+import { Outlet, useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 import Swal from "sweetalert2";
 function Dashboard() {
-  const navigate = useNavigate()
-
-
+  const navigate = useNavigate();
 
   // 登出 清除 token
-  const logOut = () =>{
-    console.log('登出')
-    document.cookie = 'authToken=;'
-    navigate('/')
-  }
+  const logOut = () => {
+    console.log("登出");
+    document.cookie = "authToken=;";
+    navigate("/");
+  };
   // 判斷是否有登入 若無登入強行由此路由進入需導回首頁
-  // 取出 token 
+  // 取出 token
   const token = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("authToken="))
-  ?.split("=")[1];
+    .split("; ")
+    .find((row) => row.startsWith("authToken="))
+    ?.split("=")[1];
 
-
-  useEffect(()=>{
-      if(!token){
-        Swal.fire({
-          title: "已登出 請重新登入",
-          icon: "error",
-        }).then(()=>{
-          navigate('/')
-        })
-       
-      }else{
-        // 解碼 取得身份
-        const userData = JSON.parse(atob(token))
-        console.log(userData)
-      }
-  },[token,navigate])
+  useEffect(() => {
+    if (!token) {
+      Swal.fire({
+        title: "已登出 請重新登入",
+        icon: "error",
+      }).then(() => {
+        navigate("/");
+      });
+    } else {
+      // 解碼 取得身份
+      const userData = JSON.parse(atob(token));
+      console.log(userData);
+    }
+  }, [token, navigate]);
 
   return (
-    <>
-     <nav className="navbar navbar-expand-lg bg-dark">
-        <div className="container-fluid">
-          <p className="text-white mb-0">
-            後台管理系統
-          </p>
-          <div className="" >
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <button type="button" className="btn btn-sm btn-light" onClick={logOut}>
-                  登出
-                </button>
-              </li>
-            </ul>
+    <div className=" w-full animate-fadeIn">
+      <header className="fixed top-0 left-0 w-full  p-3 shadow-lg bg-gradient-to-l from-[#476bb5] from-10% via-[#476bb5] via-40% to-[#5aade4] z-10">
+        <nav className="flex justify-between">
+          <h2 className="text-white text-xl font-medium">後台管理系統</h2>
+          <div className="">
+            <button
+              type="button"
+              className="bg-white px-2 py-1 rounded transition duration-300 hover:bg-slate-400 hover:text-white font-normal"
+              onClick={logOut}
+            >
+              登出
+            </button>
           </div>
-        </div>
-      </nav>
-      <div className="d-flex">
-        <div className="bg-light" >
-          <ul className="list-group list-group-flush">
-            <Link className="list-group-item list-group-item-action py-3" to="/admin/products">
-              <i className="bi bi-cup-fill me-2" />
-              產品列表
-            </Link>
-            <Link className="list-group-item list-group-item-action py-3" to="/admin/coupons">
-              <i className="bi bi-ticket-perforated-fill me-2" />
-              優惠卷列表
-            </Link>
-            <Link className="list-group-item list-group-item-action py-3" to="/admin/orders">
-              <i className="bi bi-receipt me-2" />
-              訂單列表
-            </Link>
+        </nav>
+      </header>
+      <div className="flex w-full h-full mt-14 h-[calc(100%-3.5rem)]">
+        <div className="bg-[#f5f5f5] shadow-custom w-[171px] px-4 pt-12 relative ">
+          <ul>
+            <li className="border-b-2 pb-2 mb-8 border-white">
+              <Link className="flex w-full items-center text-[#3c3e47]" to="/admin/products"><SiProducthunt className="text-[#59abe2] mr-2"/>產品列表</Link>
+            </li>
+            <li className="border-b-2 pb-2 mb-8 border-white">
+              <Link className="flex w-full items-center text-[#3c3e47]" to="/admin/orders"><VscListOrdered className="text-[#59abe2] mr-2"/>訂單列表</Link>
+            </li>
           </ul>
         </div>
-        <div className="w-100">
+        <div className="w-[calc(100%-171px)] bg-white pt-9 ">
           {/* Products  需先判斷 有無token */}
-          {token && <Outlet/>}
+          {token && <Outlet />}
           {/* Products end */}
         </div>
-      </div></>
-  )
+      </div>
+    </div>
+  );
 }
 
 export default Dashboard;

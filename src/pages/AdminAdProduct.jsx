@@ -21,7 +21,8 @@ function AdminAdProduct() {
   const { type, productList } = location.state || { type: "create", productList: {} }
 
   // 狀態管理
-  const [editorContent, setEditorContent] = useState(""); // 編輯器內容
+  const [updateImg,setUpdateImg] = useState('')
+  const [editorContent, setEditorContent] = useState(''); // 編輯器內容
   const [productData, setProductData] = useState({
     title: "",
     category: "",
@@ -87,53 +88,57 @@ function AdminAdProduct() {
   };
 
   // 處理編輯器內容變更
-  const handleEditorChange = (event, editor) => setEditorContent(editor.getData());
+  const handleEditorChange = (event, editor) =>{
+    const data = editor.getData(); // 獲取編輯器的內容
+    console.log("CKEditor內容：", data); // 確認內容
+    setEditorContent(data);
+  }
 
   // 處理提交
   const handleSubmit = async () => {
-    const payload = {...productData}
     productData.content = editorContent
+    console.log("最終提交的資料：", productData);
+    const payload = { ...productData };
+    let api = `${import.meta.env.VITE_APP_API_URL}addProduct`;
+    let method = "post";
 
-    console.log("提交的商品資料：", productData)
-    let api = `${import.meta.env.VITE_APP_API_URL}addProduct`,
-        method = 'post'
-        
-    if(type === 'edit'){
-     
-      api = `${import.meta.env.VITE_APP_API_URL}/editProduct`,
-      method = 'patch'
-      // 刪除時間
-      delete payload.createdAt
-    }else{
-     
-      // 新增模式，加上 createdAt
-      payload.createdAt = new Date().toISOString()
+    if (type === "edit") {
+      api = `${import.meta.env.VITE_APP_API_URL}/editProduct`;
+      method = "patch";
+      delete payload.createdAt;
+    } else {
+      payload.createdAt = new Date().toISOString();
     }
-    console.log('msg',msg)
-    try {
-      const res = await axios[method](api,payload)
-      const {success} =  res.data
-      if(success){
-        dispatch(setMessage({
-          type: "success",
-          actionType: msg,
-        }))
-      }
 
+    try {
+      const res = await axios[method](api, payload);
+      const { success } = res.data;
+      if (success) {
+        dispatch(
+          setMessage({
+            type: "success",
+            actionType: msg,
+          })
+        );
+      }
     } catch (error) {
-      dispatch(setMessage({
-        type: "error",
-        actionType: msg,
-      }))
+      dispatch(
+        setMessage({
+          type: "error",
+          actionType: msg,
+        })
+      );
       console.error("提交失敗：", error.message);
     }
   };
+  
 
   // 圖片上傳處理
  const handleImageUpload = (e) => {
   const file = e.target.files[0];
+  console.log(file)
   if (!file) return;
-
+  setUpdateImg(file.name)
   setUploading(true);
   const storageRef = ref(storage, `images/${file.name}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
@@ -141,9 +146,10 @@ function AdminAdProduct() {
   uploadTask.on(
     "state_changed",
     (snapshot) => {
-      // 可選：上傳進度
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log("Upload is " + progress + "% done");
+      // // 可選：上傳進度
+      // const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      // console.log("Upload is " + progress + "% done");
+     
     },
     (error) => {
       console.error("上傳失敗：", error);
@@ -160,22 +166,48 @@ function AdminAdProduct() {
 };
 
   return (
-    <div className="p-3">
-      <ul>
+    <div className="p-3 w-[90%] m-auto">
+      <h2 className="title-h1 border-b pb-2 mb-6">
+        {type === "create" ? "新增" : "修改"}商品
+      </h2>
+     
+      <ul className="add-input-box mb-6">
         <li>
-          <label htmlFor="image">
+          <label htmlFor="image" className="relative">
             <input
+              className="input-style addInpiut opacity-0 absolute cursor-pointer"
               type="file" 
               accept="image/gif, image/jpeg, image/png"
               id="image"
               name="image"
               placeholder="上傳圖片"
               onChange={handleImageUpload}
+              value={updateImg.file}
+            />
+          
+            <button className="addBtn w-32 py-2 mr-2">{updateImg ? '重新上傳' : '圖片上傳'}</button>
+            <span> {updateImg !== '' ? `檔案名稱：${updateImg}` : ''}</span>
+           
+          </label>
+        </li>
+        <li>
+          <h4>標題：</h4>
+          <label htmlFor="title">
+            <input
+              className="input-style addInpiut"
+              type="text"
+              id="title"
+              name="title"
+              placeholder="請輸入標題"
+              onChange={handleChange}
+              value={productData.title}
             />
           </label>
         </li>
         <li>
+        <h4>上架時間：</h4>
         <DatePicker
+          className="input-style addInpiut"
           selected={selectedDate}
           onChange={(date) =>{
             handleChange({
@@ -193,20 +225,10 @@ function AdminAdProduct() {
 
         </li>
         <li>
-          <label htmlFor="title">
-            <input
-              type="text"
-              id="title"
-              name="title"
-              placeholder="請輸入標題"
-              onChange={handleChange}
-              value={productData.title}
-            />
-          </label>
-        </li>
-        <li>
+          <h4>分類：</h4>
           <label htmlFor="category">
             <input
+              className="input-style addInpiut"
               type="text"
               id="category"
               name="category"
@@ -217,8 +239,10 @@ function AdminAdProduct() {
           </label>
         </li>
         <li>
+          <h4>原價：</h4>
           <label htmlFor="origin_price">
             <input
+              className="input-style addInpiut"
               type="number"
               id="origin_price"
               name="origin_price"
@@ -229,8 +253,10 @@ function AdminAdProduct() {
           </label>
         </li>
         <li>
+          <h4>價格：</h4>
           <label htmlFor="price">
             <input
+              className="input-style addInpiut"
               type="number"
               id="price"
               name="price"
@@ -240,31 +266,19 @@ function AdminAdProduct() {
             />
           </label>
         </li>
-        <li>
-          <label htmlFor="unit">
-            <input
-              type="text"
-              id="unit"
-              name="unit"
-              placeholder="請輸入單位"
-              onChange={handleChange}
-              value={productData.unit}
-            />
-          </label>
-        </li>
       </ul>
       <div className="editor-container">
         <CKEditor
+          className=" min-h-[300px]"
           editor={ClassicEditor}
           config={{
-            licenseKey: "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3MzU2MDMxOTksImp0aSI6IjU1YWMxNjg4LWI1YjAtNDg3NC1iNWQ2LTM4N2ViMGMyZjliNiIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6IjRmMDk0MDBhIn0.XijNlhhEoLC7XuouFsB3TjUiyVkc98iotVLY06eB1jRMxZ2ouy3GZU8uBw2KZx77VfdvxNT0NeuXN0QbPOQ1Ow", // 替換為您的 License Key
+            licenseKey: import.meta.env.VITE_APP_CKE,
           }}
-          data={productData.editorContent || '<p>請輸入文字</p>'}
+          data={productData.content || '<p>請輸入文字</p>'}
           onChange={handleEditorChange}
         />
-        {/* <div dangerouslySetInnerHTML={{ __html: content }} /> */}
       </div>
-      <button type="button" onClick={handleSubmit}>
+      <button type="button" className="addBtn mt-6 py-2 w-32" onClick={handleSubmit}>
         {type === "create" ? "新增" : "修改"}商品
       </button>
     </div>

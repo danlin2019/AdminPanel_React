@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <Notification/>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex justify-center min-h-screen">
         {/* Routes 主要輸出內容的區塊 */}
         <Outlet/>
       </div>

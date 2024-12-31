@@ -1,18 +1,74 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body{
-  background-color: #ffcc;
+@layer base {
+  body {
+    font-family: "Noto Sans TC", serif;
+    @apply bg-gray-100 text-[#3c3e47];
+  }
+  td{
+    @apply py-2 overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+  th{
+    @apply font-[700] text-zinc-500 text-[0.9375rem];
+  }
+
 }
 
-.img-fit-cover{
-  
-  height: 200px;
-  img{
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
+@layer components {
+  .input-style {
+    @apply border-inherit bg-gray-100 py-2 px-4 w-96 outline-none rounded font-[400] mt-1;
   }
-}   
+  .title-h1{
+    @apply text-xl font-medium text-[#476ab5] ;
+  }
+  .addBtn {
+    @apply  bg-[#318dcc] text-white rounded py-1 px-3 transition duration-300 hover:opacity-80 text-[15px];
+  }
+  .addInpiut{
+    @apply bg-white
+  }
+  
+  .deleteBtn {
+    @apply  bg-[#d03d4c];
+  }
+  
+}
+
+.page-item{
+  &:last-child{
+   margin-right: 0;
+  }
+}
+// ck editor
+.ck.ck-editor__main,.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused),.ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable, .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners{
+  // min-height: 300px;
+}
+
+.react-datepicker-wrapper{
+  width: 100%;
+}
+.add-input-box{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  li{
+    @apply mb-6;
+    width: 100%;
+    &:not(:first-child){
+      width: 49.5%;
+    }
+  }
+  input{
+    width: 100%;
+  }
+}
+
+.add-input-box{
+  h4{
+    @apply text-zinc-500
+  }
+}
+
