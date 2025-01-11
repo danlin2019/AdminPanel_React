@@ -36,7 +36,7 @@ function Dashboard() {
 
   return (
     <div className=" w-full animate-fadeIn">
-      <header className="fixed top-0 left-0 w-full  p-3 shadow-lg bg-gradient-to-l from-[#476bb5] from-10% via-[#476bb5] via-40% to-[#5aade4] z-10">
+      <header className="fixed top-0 left-0 w-full p-3 shadow-lg bg-gradient-to-l from-[#476bb5] from-10% via-[#476bb5] via-40% to-[#5aade4] z-20">
         <nav className="flex justify-between">
           <h2 className="text-white text-xl font-medium">後台管理系統</h2>
           <div className="">

@@ -19,7 +19,11 @@ export default {
       animation: {
         fadeIn: "fadeIn 0.5s ease-in-out",
       },
+      backgroundImage: {
+        'bottom-bg': "url('/docs@tinypng.d9e4dcdc.png')",
+      },
     },
+
     variants: {
       extend: {
         backgroundColor: ["hover"], // 啟用 hover 狀態
