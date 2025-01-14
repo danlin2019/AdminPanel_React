@@ -4,6 +4,7 @@ const predefindMessage = {
   success:{
     create:{title:'提交成功',icon:'success'},
     edit:{title:'編輯成功',icon:'success'},
+    orderdata:{title:'訂單更新成功',icon:'success'},
   },
   error:{
     create:{title:'',icon:'error'},
@@ -19,6 +20,7 @@ export const messageSlice = createSlice({
   name:'message',
 
   initialState:{
+    deleName: '',
     title:'',
     icon:'',
     type: '',
@@ -30,9 +32,8 @@ export const messageSlice = createSlice({
 
     setMessage(state,action){
       const {type,actionType} = action.payload
-      // type: success/error, actionType: submit/delete/edit
       const message = predefindMessage[type]?.[actionType]
-      console.log('message',message)
+      // console.log('message',message)
       if(message){
         state.title = message.title,
         state.icon = message.icon,
@@ -41,7 +42,9 @@ export const messageSlice = createSlice({
       }
     },
     deleteMesage(state,action){
-      const {type,actionType,deleteDate} = action.payload
+      const {type,actionType,deleteDate,deleName} = action.payload
+      // console.log('action.payload',action.payload)
+      state.deleName = deleName
       state.icon = type
       state.type = actionType
       state.deleContent = deleteDate
@@ -53,7 +56,6 @@ export const messageSlice = createSlice({
       state.type = ''
       state.isVisible = false
     },
-
   }
 
 })

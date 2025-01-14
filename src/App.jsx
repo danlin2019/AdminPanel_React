@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Notification from "./components/admin/Notification";
+import Notification from "./components/Notification";
 
 function App() {
   return (
