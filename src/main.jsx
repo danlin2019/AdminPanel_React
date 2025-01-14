@@ -6,8 +6,7 @@ import router from "./routes";
 import { Provider } from 'react-redux';
 import { store } from './store';
 
-// axios 預設會加入這串網址 import.meta.env.VITE_APP_API_URL
-// axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL
+
 
 
 createRoot(document.getElementById('root')).render(

@@ -3,9 +3,9 @@ import Login from '../pages/Login'; // 登入
 import Dashboard from '../pages/Dashboard'; // 左邊選項
 import AdminProducts from '../pages/AdminProducts'; // 產品列表
 import AdminAdProduct from '../pages/AdminAdProduct';// 新增商品
-import AdminOrderProducts from '../pages/AdminOrderProduct';
-import AdminOrderDetail from '../pages/AdminOrderDetail';
-import Charts from '../pages/Charts';
+import AdminOrderProducts from '../pages/AdminOrderProduct'; //
+import AdminOrderDetail from '../pages/AdminOrderDetail'; //
+import Charts from '../pages/Charts'; //
 
 
 import { createHashRouter } from 'react-router-dom';
