@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: "Noto Sans TC", serif;
+    @apply bg-gray-100 text-[#3c3e47];
+  }
+  td{
+    @apply py-2 overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+  th{
+    @apply font-[700] text-zinc-500 text-[0.9375rem];
+  }
+  h4{
+    @apply text-zinc-500 mb-1 font-bold
+  }
+}
+
+@layer components {
+  .input-style {
+    @apply border-inherit bg-gray-100 py-2 px-4 w-96 outline-none rounded font-[400] mt-1;
+  }
+  .title-h1{
+    @apply text-xl font-medium text-[#476ab5] ;
+  }
+  .addBtn {
+    @apply  bg-[#318dcc] text-white rounded py-1 px-3 transition duration-300 hover:opacity-80 text-[15px];
+  }
+  .addInpiut{
+    @apply bg-white
+  }
+  
+  .deleteBtn {
+    @apply  bg-[#d03d4c];
+  }
+  
+}
+
+// 左邊導航
+.left-nav li{
+  @apply border-b-2 pb-2 mb-8 border-white;
+  a{
+    @apply flex w-full items-center text-[#3c3e47];
+    &.active{
+      @apply text-[#318dcc];
+    }
+  }
+  svg{
+    @apply text-[#59abe2] mr-2;
+  }
+}
+
+// 編輯器預設高度
+.ck.ck-content.ck-editor__editable{
+  @apply min-h-72;
+
+}
+
+.page-item{
+  &:last-child{
+   margin-right: 0;
+  }
+}
+
+// 分頁
+.a-link{
+  @apply flex rounded transition duration-300  px-[0.6rem] py-[0.1rem] text-black hover:opacity-75;
+  &.active{
+    @apply  bg-[#318dcc] text-white;
+  }
+}
+.page-link{
+  &.disabled{
+    @apply text-gray-300 pointer-events-none;
+  }
+
+}
+
+// loading
+.loading{
+  @apply w-full h-full fixed top-0 left-0 z-20 bg-[#0000008a] text-white flex justify-center items-center text-center text-sm;
+  img{
+    @apply w-32
+  }
+}
+.react-datepicker-wrapper{
+  width: 100%;
+}
+.add-input-box{
+  @apply flex justify-between flex-wrap w-full;
+
+  li{
+    @apply mb-6 w-full;
+    &:not(:first-child){
+     @apply w-[49.5%];
+    }
+  }
+  input{
+    @apply w-full;
+  }
+}
+
+.add-input-box{
+  h4{
+    @apply text-zinc-500 font-normal
+  }
+}
+
+.order-detail{
+  li{
+    @apply flex w-[50%] mb-5 border-b pb-3;
+    h4{
+      @apply mr-3
+    }
+  }
+}
+.order-product{
+  display: flex;
+  flex-wrap: wrap;
+
+  li{
+    @apply  w-full
+  }
+}
+.img-photo{
+  @apply relative w-[120px] h-[80px] overflow-hidden mr-3;
+  
+  img{
+    @apply absolute top-[50%] left-0 object-cover -translate-y-2/4;
+  }
+}
+
+.swal2-confirm{
+  @apply  bg-[#318dcc]
+}
