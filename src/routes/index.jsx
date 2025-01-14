@@ -52,7 +52,3 @@ const routes = [
 
 const router = createHashRouter(routes)
 export default router
-
-// git remote add origin https://github.com/danlin2019/AdminPanel_React.git
-// git branch -M main
-// git push -u origin main

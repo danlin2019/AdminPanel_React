@@ -4,6 +4,8 @@ import legacy from "@vitejs/plugin-legacy"
 
 // https://vite.dev/config/
 export default defineConfig({
+  // 開發中 還是產品路徑
+  base: process.env.NODE_ENV === 'production' ? '/AdminPanel_React/' : '/',
   plugins: [
     react(),
     legacy({
