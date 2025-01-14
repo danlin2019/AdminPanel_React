@@ -14,7 +14,13 @@ const db = admin.firestore();
 const cors = require("cors");
 const corsMiddleware = cors({ origin: true });
 
-// 新增產品 API（後台）
+
+/**
+ * 新增產品 API（後台）
+ * 用於分頁顯示產品資料
+ * @method POST
+ * @endpoint /addProduct
+ */
 exports.addProduct = onRequest((req, res) => {
   corsMiddleware(req, res, async () => {
     if (req.method !== "POST") {
@@ -69,7 +75,7 @@ exports.allProducts = onRequest((req, res) => {
       });
 
       const totalProducts = products.length;
-      const pageSize = parseInt(req.query.pageSize) || 10;
+      const pageSize = parseInt(req.query.pageSize) || 12;
       const page = parseInt(req.query.page) || 1;
       const totalPages = Math.ceil(totalProducts / pageSize);
 
@@ -185,7 +191,7 @@ exports.getOrderList = onRequest((req, res) => {
 
       // 分頁處理
       const totalOrders = orders.length;
-      const pageSize = parseInt(req.query.pageSize) || 10; // 每頁顯示數量
+      const pageSize = parseInt(req.query.pageSize) || 12; // 每頁顯示數量
       const page = parseInt(req.query.page) || 1; // 當前頁碼
       const totalPages = Math.ceil(totalOrders / pageSize); // 總頁數
 
@@ -212,6 +218,68 @@ exports.getOrderList = onRequest((req, res) => {
   });
 });
 
+
+/**
+ * 取得單一訂單資料（後台）
+ * @method GET
+ * @endpoint /getOrder/:id
+ */
+exports.getOrder = onRequest((req, res) => {
+  corsMiddleware(req, res, async () => {
+    try {
+      if (req.method !== "GET") {
+        return res.status(405).send({ success: false, message: "方法不被允許" });
+      }
+
+      const orderId = req.query.id; // 從路徑參數中取得訂單 ID
+      if (!orderId) {
+        return res.status(400).send({ success: false, message: "缺少訂單 ID" });
+      }
+
+      const doc = await db.collection("orders").doc(orderId).get();
+      if (!doc.exists) {
+        return res.status(404).json({ success: false, message: "訂單不存在" });
+      }
+
+      // 回應單一訂單資料
+      res.status(200).json({ success: true, order: { id: doc.id, ...doc.data() } });
+    } catch (error) {
+      console.error("獲取訂單失敗：", error.message);
+      res.status(500).json({ success: false, error: "獲取訂單失敗，請稍後再試" });
+    }
+  });
+});
+
+/**
+ * 更新訂單 API（後台）
+ * 用於更新訂單狀態或其他屬性
+ * @method PUT
+ * @endpoint /updateOrder
+ */
+exports.updateOrder = onRequest((req, res) => {
+  corsMiddleware(req, res, async () => {
+    if (req.method !== "PUT") {
+      return res.status(405).json({ success: false, message: "方法不被允許" });
+    }
+
+    const { orderId, updates } = req.body;
+
+    if (!orderId || !updates) {
+      return res.status(400).json({ success: false, message: "缺少訂單 ID 或更新資料" });
+    }
+
+    try {
+      // 更新 Firestore 中的訂單
+      await db.collection("orders").doc(orderId).update(updates);
+
+      res.status(200).json({ success: true, message: "訂單已成功更新" });
+    } catch (error) {
+      console.error("更新訂單失敗：", error);
+      res.status(500).json({ success: false, error: "更新訂單失敗，請稍後再試" });
+    }
+  });
+});
+
 /**
  * 刪除訂單 API(後台)
  * 用於刪除選擇的產品項目
@@ -224,7 +292,7 @@ exports.deleteOrder = onRequest((req, res) => {
       return res.status(405).json({ success: false, message: "方法不被允許" });
     }
 
-    const { orderId } = req.query;
+    const orderId = req.query?.id;
 
     if (!orderId) {
       return res.status(400).json({ success: false, message: "缺少訂單 ID" });
@@ -259,7 +327,7 @@ exports.createOrder = onRequest((req, res) => {
 
     const order = req.body;
 
-    if (!order.items || !order.customer) {
+    if (!order.name || !order.email) {
       return res.status(400).json({ success: false, message: "缺少必要的訂單信息" });
     }
 
@@ -278,6 +346,41 @@ exports.createOrder = onRequest((req, res) => {
     } catch (error) {
       console.error("建立訂單失敗：", error);
       res.status(500).json({ success: false, error: "伺服器錯誤" });
+    }
+  });
+});
+
+/**
+ * 根據產品 ID 取得單一產品資料 （前台)
+ * @method GET
+ * @param {string} req.query.id - 產品的唯一 ID
+ * @returns {Object} 回傳該產品的詳細資訊
+ * @endpoint /getProductById
+ */
+exports.getProductById = onRequest((req, res) => {
+  corsMiddleware(req, res, async () => {
+    try {
+      if (req.method !== "GET") {
+        return res.status(405).json({ success: false, message: "方法不被允許" });
+      }
+
+      const productId = req.query.id; // 獲取請求的產品 ID
+      if (!productId) {
+        return res.status(400).json({ success: false, message: "缺少產品 ID" });
+      }
+
+      const productDoc = await db.collection("productList").doc(productId).get();
+
+      if (!productDoc.exists) {
+        return res.status(404).json({ success: false, message: "產品不存在" });
+      }
+
+      const product = { id: productDoc.id, ...productDoc.data() };
+
+      res.status(200).json({ success: true, product });
+    } catch (error) {
+      console.error("獲取產品失敗：", error.message);
+      res.status(500).json({ success: false, message: "伺服器錯誤" });
     }
   });
 });

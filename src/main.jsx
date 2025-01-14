@@ -3,7 +3,6 @@ import './stylesheets/all.scss';
 import { RouterProvider } from "react-router-dom";
 import { createRoot } from 'react-dom/client'
 import router from "./routes";
-import axios from "axios";
 import { Provider } from 'react-redux';
 import { store } from './store';
 

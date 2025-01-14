@@ -1,6 +1,7 @@
 import { SiProducthunt } from "react-icons/si";
 import { VscListOrdered } from "react-icons/vsc";
-import { Outlet, useNavigate, Link } from "react-router-dom";
+import { FaChartSimple } from "react-icons/fa6";
+import { Outlet, useNavigate,NavLink } from "react-router-dom";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 function Dashboard() {
@@ -36,7 +37,7 @@ function Dashboard() {
 
   return (
     <div className=" w-full animate-fadeIn">
-      <header className="fixed top-0 left-0 w-full  p-3 shadow-lg bg-gradient-to-l from-[#476bb5] from-10% via-[#476bb5] via-40% to-[#5aade4] z-10">
+      <header className="fixed top-0 left-0 w-full p-3 shadow-lg bg-gradient-to-l from-[#476bb5] from-10% via-[#476bb5] via-40% to-[#5aade4] z-20">
         <nav className="flex justify-between">
           <h2 className="text-white text-xl font-medium">後台管理系統</h2>
           <div className="">
@@ -50,14 +51,17 @@ function Dashboard() {
           </div>
         </nav>
       </header>
-      <div className="flex w-full h-full mt-14 h-[calc(100%-3.5rem)]">
+      <div className="flex w-full mt-14 h-[calc(100%-3.5rem)]">
         <div className="bg-[#f5f5f5] shadow-custom w-[171px] px-4 pt-12 relative ">
-          <ul>
-            <li className="border-b-2 pb-2 mb-8 border-white">
-              <Link className="flex w-full items-center text-[#3c3e47]" to="/admin/products"><SiProducthunt className="text-[#59abe2] mr-2"/>產品列表</Link>
+          <ul className="left-nav">
+            <li>
+              <NavLink to="/admin/products"><SiProducthunt/>產品列表</NavLink>
             </li>
-            <li className="border-b-2 pb-2 mb-8 border-white">
-              <Link className="flex w-full items-center text-[#3c3e47]" to="/admin/orders"><VscListOrdered className="text-[#59abe2] mr-2"/>訂單列表</Link>
+            <li>
+              <NavLink to="/admin/orders"><VscListOrdered/>訂單列表</NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/charts"><FaChartSimple/>銷量數據</NavLink>
             </li>
           </ul>
         </div>

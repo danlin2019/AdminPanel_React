@@ -1,9 +1,9 @@
 function Pagination({ pagination, chanegePage }) {
   return (
     <div className="w-full">
-      <ul className="flex">
+      <ul className="flex space-x-3 ">
         {/* 上一頁 */}
-        <li className="mr-2">
+        <li >
           <a
             className={`page-link ${pagination.hasPrev ? "" : "disabled"}`}
             href="#"
@@ -21,9 +21,9 @@ function Pagination({ pagination, chanegePage }) {
 
         {/* 頁碼 */}
         {[...new Array(pagination.totalPages)].map((_, i) => (
-          <li className="page-item rounded transition duration-300 bg-[#318dcc] px-[0.6rem] py-[0.1rem] text-white hover:bg-[#19679c]" key={`${i}_page`}>
+          <li className="" key={`${i}_page`}>
             <a
-              className={`page-link ${i + 1 === pagination.currentPage ? "active" : ""}`}
+              className={`a-link ${i + 1 === pagination.currentPage ? "active" : ""}`}
               href="#"
               onClick={(e) => {e.preventDefault();chanegePage(i + 1);}}
             >
@@ -33,7 +33,7 @@ function Pagination({ pagination, chanegePage }) {
         ))}
 
         {/* 下一頁 */}
-        <li className="ml-2">
+        <li>
           <a
             className={`page-link ${pagination.hasNext ? "" : "disabled"}`}
             href="#"
