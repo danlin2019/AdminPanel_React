@@ -1,15 +1,15 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import ReactECharts from "echarts-for-react";
+import axios from "axios"
+import React, { useEffect, useState } from "react"
+import ReactECharts from "echarts-for-react"
 
 
 const Charts = () => {
-  const [chartOptions, setChartOptions] = useState(null); // ECharts 設定
-  const [filterType, setFilterType] = useState("all"); // 篩選：all , weekly, monthly
+  const [chartOptions, setChartOptions] = useState(null) // ECharts 設定
+  const [filterType, setFilterType] = useState("all") // 篩選：all , weekly, monthly
   const [loading,setLoading] = useState(false)
   useEffect(() => {
-    getProducts();
-  }, [filterType]); // 當篩選方式改變時，重新獲取並處理數據
+    getProducts()
+  }, [filterType]) // 當篩選方式改變時，重新獲取並處理數據
 
   // 取得產品列表 API
   const getProducts = async () => {
@@ -101,11 +101,11 @@ const Charts = () => {
 
         // 累加數量
         groupedMap.set(key, (groupedMap.get(key) || 0) + quantity)
-      });
-    });
+      })
+    })
 
     return groupedMap
-  };
+  }
 
   return (
     <div className="w-[90%] m-auto ">
@@ -126,7 +126,7 @@ const Charts = () => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Charts;
+export default Charts

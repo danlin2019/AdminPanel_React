@@ -1,33 +1,33 @@
-import axios from "axios";
-import "react-datepicker/dist/react-datepicker.css";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import DatePicker from "react-datepicker";
-import { setMessage } from "../slice/messageSlice";
-import Loading from "../components/Loading";
-import { useProductNavigation } from "../components/useProductNavigation";
+import axios from "axios"
+import "react-datepicker/dist/react-datepicker.css"
+import { CKEditor } from "@ckeditor/ckeditor5-react"
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic"
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { storage } from "../firebase"
+import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import DatePicker from "react-datepicker"
+import { setMessage } from "../slice/messageSlice"
+import Loading from "../components/Loading"
+import { useProductNavigation } from "../components/useProductNavigation"
 
 function AdminAdProduct() {
-  const location = useLocation();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [loadingState, setLoadingState] = useState(false);
-  const [warning, setWarning] = useState(false);
-  const dispatch = useDispatch();
-  const [msg, setMsg] = useState("");
-  const { openDeteleProduct } = useProductNavigation();
+  const location = useLocation()
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [loadingState, setLoadingState] = useState(false)
+  const [warning, setWarning] = useState(false)
+  const dispatch = useDispatch()
+  const [msg, setMsg] = useState("")
+  const { openDeteleProduct } = useProductNavigation()
   const { type, productList } = location.state || {
     type: "create",
     productList: {},
-  };
+  }
 
   // 狀態管理
-  const [updateImg, setUpdateImg] = useState("");
-  const [editorContent, setEditorContent] = useState(""); // 編輯器內容
+  const [updateImg, setUpdateImg] = useState("")
+  const [editorContent, setEditorContent] = useState("") // 編輯器內容
   const [productData, setProductData] = useState({
     title: "",
     category: "",
@@ -38,7 +38,7 @@ function AdminAdProduct() {
     is_enabled: 0,
     time: "",
     imageUrl: "",
-  });
+  })
 
   //
   /**
@@ -60,114 +60,113 @@ function AdminAdProduct() {
         is_enabled: 0,
         time: new Date().getTime(),
         imageUrl: "",
-      });
-      setMsg("create");
+      })
+      setMsg("create")
     } else if (type === "edit") {
       setProductData(productList)
-      setSelectedDate(productList.time || new Date().getTime());
-      setMsg("edit");
+      setSelectedDate(productList.time || new Date().getTime())
+      setMsg("edit")
     }
-  }, [type, productList]);
+  }, [type, productList])
 
   // 處理表單變更
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "title") if (name !== "") setWarning(false);
+    const { name, value } = e.target
+    if (name === "title") if (name !== "") setWarning(false)
 
     if (["origin_price", "price"].includes(name)) {
       setProductData({
         ...productData,
         [name]: Number(value),
-      });
+      })
     } else if (name === "time") {
-      console.log(value);
+      console.log(value)
       setProductData({
         ...productData,
         [name]: value,
-      });
-      setSelectedDate(new Date(value));
+      })
+      setSelectedDate(new Date(value))
     } else {
       setProductData({
         ...productData,
         [name]: value,
-      });
+      })
     }
-  };
+  }
 
   // 處理編輯器內容變更
   const handleEditorChange = (event, editor) => {
-    const data = editor.getData(); // 獲取編輯器的內容
-    setEditorContent(data);
-  };
+    const data = editor.getData() // 獲取編輯器的內容
+    setEditorContent(data)
+  }
 
   // 處理提交
   const handleSubmit = async () => {
-    productData.content = editorContent;
-    console.log("最終提交的資料：", productData);
+    productData.content = editorContent
     if (productData.title === "") {
-      setWarning(true);
-      return;
+      setWarning(true)
+      return
     } else {
-      setWarning(false);
+      setWarning(false)
     }
-    setLoadingState(true);
-    const payload = { ...productData };
-    let api = `${import.meta.env.VITE_APP_API_URL}addProduct`;
-    let method = "post";
+    setLoadingState(true)
+    const payload = { ...productData }
+    let api = `${import.meta.env.VITE_APP_API_URL}addProduct`
+    let method = "post"
 
     if (type === "edit") {
-      api = `${import.meta.env.VITE_APP_API_URL}/editProduct`;
-      method = "patch";
-      delete payload.createdAt;
+      api = `${import.meta.env.VITE_APP_API_URL}/editProduct`
+      method = "patch"
+      delete payload.createdAt
     } else {
-      payload.createdAt = new Date().toISOString();
+      payload.createdAt = new Date().toISOString()
     }
 
     try {
-      const res = await axios[method](api, payload);
-      const { success } = res.data;
+      const res = await axios[method](api, payload)
+      const { success } = res.data
       if (success) {
         dispatch(
           setMessage({
             type: "success",
             actionType: msg,
           })
-        );
+        )
       }
-      setLoadingState(false);
+      setLoadingState(false)
     } catch (error) {
-      console.log(error);
+      console.log(error)
       dispatch(
         setMessage({
           type: "error",
           actionType: msg,
         })
-      );
-      console.error("提交失敗：", error.message);
+      )
+      console.error("失敗：", error.message)
     }
-  };
+  }
 
   // 圖片上傳處理
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUpdateImg(file.name);
-    const storageRef = ref(storage, `images/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const file = e.target.files[0]
+    if (!file) return
+    setUpdateImg(file.name)
+    const storageRef = ref(storage, `images/${file.name}`)
+    const uploadTask = uploadBytesResumable(storageRef, file)
 
     uploadTask.on(
       "state_changed",
       (snapshot) => {},
       (error) => {
-        console.error("上傳失敗：", error);
+        console.error("上傳失敗：", error)
       },
       async () => {
         // 上傳完成
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        setProductData((prev) => ({ ...prev, imageUrl: downloadURL }));
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+        setProductData((prev) => ({ ...prev, imageUrl: downloadURL }))
       }
-    );
-  };
+    )
+  }
 
   // loading
   if (loadingState) {
@@ -175,7 +174,7 @@ function AdminAdProduct() {
       <Loading
         loadingText={`${type === "create" ? "建立中" : "更新中"}...請稍候`}
       />
-    );
+    )
   }
   return (
     <div className="p-3 w-[90%] m-auto">
@@ -250,7 +249,7 @@ function AdminAdProduct() {
                   name: "time",
                   value: date.getTime(),
                 },
-              });
+              })
             }}
             name="time"
             placeholderText="請選擇日期與時間"
@@ -354,7 +353,7 @@ function AdminAdProduct() {
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default AdminAdProduct;
+export default AdminAdProduct

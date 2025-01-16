@@ -1,7 +1,7 @@
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import Pagination from "../components/Pagination";
-import Search from "../components/Search";
+import axios from "axios"
+import { useEffect, useRef, useState } from "react"
+import Pagination from "../components/Pagination"
+import Search from "../components/Search"
 import ProductList from '../components/ProductList'
 
 function AdminOrderProducts(){
@@ -16,7 +16,7 @@ function AdminOrderProducts(){
     hasPrev: false,
     totalPages: 0,
     totalProducts: 0,
-  });
+  })
 
   useEffect(()=>{
     getProducts()
@@ -33,7 +33,7 @@ function AdminOrderProducts(){
           pageSize: pagination.pageSize,
         },
       }
-    );
+    )
     setProducts(res.data.orders)
     setFilteredProducts(res.data.orders)
 
@@ -64,23 +64,22 @@ function AdminOrderProducts(){
         // 收尋金額
         product.totalMoney?.toString().includes(searchLower)
       )
-    });
+    })
 
     // 篩選後資料
-    setFilteredProducts(filterProduct);
+    setFilteredProducts(filterProduct)
     setPagination((prev) => ({
       ...prev,
       totalPages: Math.ceil(filterProduct.length / prev.pageSize), // 取得頁數
       totalProducts: filterProduct.length, // 取得筆數
       currentPage: 1, // 搜尋後從第 1 頁開始
-    }));
-    console.log('filterProduct',filterProduct)
+    }))
     if(filterProduct.length === 0){
       setSearchData(true)
     }else{
       setSearchData(false)
     }
-  };
+  }
   
   /**
    * 排序
@@ -129,4 +128,4 @@ function AdminOrderProducts(){
   </div>)
 }
 
-export default AdminOrderProducts;
+export default AdminOrderProducts

@@ -1,24 +1,23 @@
-import { SiProducthunt } from "react-icons/si";
-import { VscListOrdered } from "react-icons/vsc";
-import { FaChartSimple } from "react-icons/fa6";
-import { Outlet, useNavigate,NavLink } from "react-router-dom";
-import { useEffect } from "react";
-import Swal from "sweetalert2";
+import { SiProducthunt } from "react-icons/si"
+import { VscListOrdered } from "react-icons/vsc"
+import { FaChartSimple } from "react-icons/fa6"
+import { Outlet, useNavigate,NavLink } from "react-router-dom"
+import { useEffect } from "react"
+import Swal from "sweetalert2"
 function Dashboard() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // 登出 清除 token
   const logOut = () => {
-    console.log("登出");
-    document.cookie = "authToken=;";
-    navigate("/");
-  };
+    document.cookie = "authToken="
+    navigate("/")
+  }
   // 判斷是否有登入 若無登入強行由此路由進入需導回首頁
   // 取出 token
   const token = document.cookie
-    .split("; ")
+    .split(" ")
     .find((row) => row.startsWith("authToken="))
-    ?.split("=")[1];
+    ?.split("=")[1]
 
   useEffect(() => {
     if (!token) {
@@ -26,14 +25,14 @@ function Dashboard() {
         title: "已登出 請重新登入",
         icon: "error",
       }).then(() => {
-        navigate("/");
-      });
+        navigate("/")
+      })
     } else {
       // 解碼 取得身份
-      const userData = JSON.parse(atob(token));
-      console.log(userData);
+      // const userData = JSON.parse(atob(token))
+      // console.log(userData)
     }
-  }, [token, navigate]);
+  }, [token, navigate])
 
   return (
     <div className=" w-full animate-fadeIn">
@@ -52,7 +51,7 @@ function Dashboard() {
         </nav>
       </header>
       <div className="flex w-full mt-14 h-[calc(100%-3.5rem)]">
-        <div className="bg-[#f5f5f5] shadow-custom w-[171px] px-4 pt-12 relative ">
+        <div className="fixed top-0 left-0 h-full bg-[#f5f5f5] shadow-custom w-[171px] px-4 pt-24">
           <ul className="left-nav">
             <li>
               <NavLink to="/admin/products"><SiProducthunt/>產品列表</NavLink>
@@ -65,14 +64,14 @@ function Dashboard() {
             </li>
           </ul>
         </div>
-        <div className="w-[calc(100%-171px)] bg-white pt-9 ">
+        <div className=" relative left-[calc(100%-(100%-171px))] w-[calc(100%-171px)] bg-white py-9 ">
           {/* Products  需先判斷 有無token */}
           {token && <Outlet />}
           {/* Products end */}
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Dashboard;
+export default Dashboard

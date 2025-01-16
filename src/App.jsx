@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom";
-import Notification from "./components/Notification";
+import { Outlet } from "react-router-dom"
+import Notification from "./components/Notification"
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Outlet/>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 /**
  * 登入
@@ -18,29 +18,29 @@ function Login() {
 
 
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [data, setData] = useState({
     username: "",
     password: "",
-  });
+  })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setData({
       ...data,
       [name]: value,
-    });
-  };
+    })
+  }
   const onSubmit = async () => {
     try {
-      const res = await axios.get("/login.json");
-      const { users } = res.data;
+   
+      const res = await axios.get(`${process.env.API_BASE_URL}login.json`)
+      const { users } = res.data
       const user = users.find((item) => {
         return (
           item.username === data.username && item.password === data.password
-        );
-      });
-      console.log("user", user);
+        )
+      })
 
       if (users) {
         const token = btoa(
@@ -48,14 +48,14 @@ function Login() {
             username: user.username,
             permissions: user.permissions,
           })
-        );
-        document.cookie = `authToken=${token}; path=/; max-age=36000`;
+        )
+        document.cookie = `authToken=${token} path=/ max-age=2592000`
         navigate("/admin/products", {
           state: { permissions: users.permissions },
-        });
+        })
       }
     } catch (error) {}
-  };
+  }
 
   return (
     <div className=" w-[60%] m-auto">
@@ -102,7 +102,7 @@ function Login() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

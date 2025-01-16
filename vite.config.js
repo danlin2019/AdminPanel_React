@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react-swc';
 import legacy from '@vitejs/plugin-legacy';
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/AdminPanel_React/' : '/', // 設置靜態資源基址
+  base: process.env.NODE_ENV === 'production' ? '/AdminPanel_React/' : '/',
+  define: {
+    'process.env.API_BASE_URL': JSON.stringify(process.env.NODE_ENV === 'production'? '/AdminPanel_React/': '/'),
+  },
   plugins: [
     react(),
     legacy({

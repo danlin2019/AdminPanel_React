@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { deleteMesage,setMessage } from "../slice/messageSlice";
-import Loading from '../components/Loading';
-import { useProductNavigation } from "../components/useProductNavigation";
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useLocation } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { deleteMesage,setMessage } from "../slice/messageSlice"
+import Loading from '../components/Loading'
+import { useProductNavigation } from "../components/useProductNavigation"
 
 function AdminOrderDetail() {
   const dispatch = useDispatch()
@@ -20,19 +20,19 @@ function AdminOrderDetail() {
 
   useEffect(() => {
     if (orderData) {
-      getOrdData();
+      getOrdData()
     } else {
-      setError('缺少訂單 ID');
+      setError('缺少訂單 ID')
     }
-  }, []);
+  }, [])
 
   const getOrdData = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}getOrder?id=${orderData}`);
-      setIsOrderData(res?.data?.order || {});
+      const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}getOrder?id=${orderData}`)
+      setIsOrderData(res?.data?.order || {})
       setIsState(res?.data?.order?.orderstate || '未處理')
     } catch (err) {
-      setError('無法載入訂單資料，請稍後再試');
+      setError('無法載入訂單資料，請稍後再試')
     }
   }
   // 更新狀態
@@ -44,14 +44,14 @@ function AdminOrderDetail() {
         orderId:uddateOrder.id,
         updates:uddateOrder
       })
-      console.log('訂單更新成功:', res.data.message);
+      console.log('訂單更新成功:', res.data.message)
       dispatch(setMessage({
         type: "success",
         actionType: 'orderdata',
       }))
       setLoadingState(false)
     } catch (error) {
-      console.error('更新訂單失敗:', error.response?.data?.message || error.message);
+      console.error('更新訂單失敗:', error.response?.data?.message || error.message)
     }
   }
 
@@ -148,4 +148,4 @@ function AdminOrderDetail() {
   )
 }
 
-export default AdminOrderDetail;
+export default AdminOrderDetail
