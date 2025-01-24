@@ -310,10 +310,6 @@ exports.deleteOrder = onRequest((req, res) => {
   });
 });
 
-/** 
- * 前台建立訂單 產品詳細頁 購物車 
-*/
-
 /**
  * 建立訂單 API （前台）
  * @method POST

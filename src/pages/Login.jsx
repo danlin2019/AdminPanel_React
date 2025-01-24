@@ -11,29 +11,28 @@ import { useNavigate } from "react-router-dom"
  * 如果正確 產生TOKEN 存取到 cookie
  * 錯誤 請重新輸入
  */
-
-
-
 function Login() {
-
-
-
   const navigate = useNavigate()
   const [data, setData] = useState({
     username: "",
     password: "",
   })
-
+  const [error,setError] = useState("")
   const handleChange = (e) => {
     const { name, value } = e.target
+    setError("")
     setData({
       ...data,
       [name]: value,
     })
   }
+
   const onSubmit = async () => {
+    if (!data.username || !data.password) {
+      setError("請輸入帳號和密碼！")
+      return
+    }
     try {
-   
       const res = await axios.get(`${process.env.API_BASE_URL}login.json`)
       const { users } = res.data
       const user = users.find((item) => {
@@ -41,7 +40,6 @@ function Login() {
           item.username === data.username && item.password === data.password
         )
       })
-
       if (users) {
         const token = btoa(
           JSON.stringify({
@@ -54,12 +52,13 @@ function Login() {
           state: { permissions: users.permissions },
         })
       }
-    } catch (error) {}
+    } catch (error) {
+      setError('帳號或密碼錯誤，請重新輸入')
+    }
   }
 
   return (
     <div className=" w-[60%] m-auto">
-      <div>
         <h2 className="text-5xl text-center mb-5">後台系統</h2>
         <div className="container mx-auto max-w-md shadow-md hover:shadow-lg transition duration-300">
          
@@ -91,6 +90,7 @@ function Login() {
                 />
               </label>
             </div>
+            <div className="text-sm text-red-600">{error}</div>
             <button
               type="button"
               className="w-full mt-6 text-indigo-50 font-bold bg-[#03A9F4] py-3 rounded-md hover:bg-[#0098dc] transition duration-300"
@@ -100,8 +100,9 @@ function Login() {
             </button>
           </div>
         </div>
+      
       </div>
-    </div>
+
   )
 }
 
